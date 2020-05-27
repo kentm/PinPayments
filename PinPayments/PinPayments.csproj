@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PinPayments</RootNamespace>
     <AssemblyName>PinPayments</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -58,6 +58,8 @@
     <Compile Include="Models\Message.cs" />
     <Compile Include="Models\PinError.cs" />
     <Compile Include="Actions\Pagination.cs" />
+    <Compile Include="Models\Plan.cs" />
+    <Compile Include="Models\Subscription.cs" />
     <Compile Include="ParameterBuilder.cs" />
     <Compile Include="PinPaymentsConfig.cs" />
     <Compile Include="PinRepository.cs" />

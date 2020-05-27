@@ -6,6 +6,7 @@ using System.Configuration;
 using PinPayments.Models;
 using Newtonsoft.Json;
 using PinPayments.Actions;
+using System.Net;
 
 namespace PinPayments.Console
 {
@@ -13,6 +14,8 @@ namespace PinPayments.Console
     {
         static void Main(string[] args)
         {
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
             // initialise PIN by passing your API Key
             // See:  https://pin.net.au/docs/api#keys
             PinService ps = new PinService(ConfigurationManager.AppSettings["Secret_API"]);
@@ -59,7 +62,6 @@ namespace PinPayments.Console
             var respChargeSearch = ps.Charge(respChargesSearch.Response[0].Token);
             System.Console.WriteLine(respChargeSearch.Response.Description);
 
-
             // Create Customer
             // See: https://pin.net.au/docs/api/customers#post-customers
 
@@ -68,7 +70,7 @@ namespace PinPayments.Console
             customer.Card = new Card();
             customer.Card.CardNumber = "5520000000000000";
             customer.Card.ExpiryMonth = "05";
-            customer.Card.ExpiryYear = "2014";
+            customer.Card.ExpiryYear = "2024";
             customer.Card.CVC = "123";
             customer.Card.Name = "Roland Robot";
             customer.Card.Address1 = "42 Sevenoaks St";
@@ -81,6 +83,24 @@ namespace PinPayments.Console
             var respCustomer = ps.CustomerAdd(customer);
             System.Console.WriteLine("Customer token: " + respCustomer.Response.Token);
 
+
+            var plan = new Plan();
+            plan.Name = "Recurring Plan Name";
+            plan.Amount = 2795;
+            plan.Currency = "AUD";
+            plan.Interval = 1;
+            plan.IntervalUnit = "month";
+
+            var newPlan = ps.PlanAdd(plan);
+            System.Console.WriteLine("Plan token: " + newPlan.Token);
+
+            var subs = new Subscription();
+            subs.PlanToken = newPlan.Token;
+            subs.CustomerToken = respCustomer.Response.Token;
+
+            var newSubs = ps.SubscriptionAdd(subs);
+            System.Console.WriteLine("Subscription token: " + newSubs.Token);
+            
             // Get Customer
             var customers = ps.Customers();
 

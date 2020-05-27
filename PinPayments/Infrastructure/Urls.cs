@@ -48,6 +48,41 @@ namespace PinPayments.Infrastructure
             get { return BaseUrl + "/1/charges/{token}/refunds"; }
         }
 
+        public static string Subscriptions
+        {
+            get { return BaseUrl + "/1/subscriptions"; }
+        }
+
+        public static string Subscription
+        {
+            get { return BaseUrl + "/1/subscriptions/{token}"; }
+        }
+
+        public static string SubscriptionReactivate
+        {
+            get { return BaseUrl + "/1/subscriptions/{token}/reactivate"; }
+        }
+
+        public static string SubscriptionLedger
+        {
+            get { return BaseUrl + "/1/subscriptions/{token}/ledger"; }
+        }
+
+        public static string Plans
+        {
+            get { return BaseUrl + "/1/plans"; }
+        }
+
+        public static string Plan
+        {
+            get { return BaseUrl + "/1/plans/{token}"; }
+        }
+
+        public static string PlanSubscriptions
+        {
+            get { return BaseUrl + "/1/plans/{token}/subscriptions"; }
+        }
+
         private static string BaseUrl
         {
             get { return ConfigurationManager.AppSettings["URI"]; }

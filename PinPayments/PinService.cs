@@ -24,6 +24,8 @@ namespace PinPayments
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
         }
 
+        #region Cards
+
         public CardCreateResponse CardCreate(Card c)
         {
             var url = Urls.Card;
@@ -32,6 +34,10 @@ namespace PinPayments
             var response = Requestor.PostString(url, postData);
             return JsonConvert.DeserializeObject<CardCreateResponse>(response);
         }
+
+        #endregion
+
+        #region Charges
 
         public Charges Charges()
         {
@@ -96,6 +102,10 @@ namespace PinPayments
             return JsonConvert.DeserializeObject<Charges>(response);
         }
 
+        #endregion
+
+        #region Customers
+
         public CustomerAdd CustomerAdd(Customer c)
         {
             var url = Urls.CustomerAdd;
@@ -136,6 +146,19 @@ namespace PinPayments
             return result;
         }
 
+        public Customer Customer(string token)
+        {
+            var url = Urls.Customers + "/" + token;
+
+            var response = Requestor.GetString(url);
+            var customer = JsonConvert.DeserializeObject<CustomerAdd>(response);
+            return customer.Response;
+        }
+
+        #endregion
+
+        #region Refunds
+
         public RefundResponse Refund(string chargeToken, int amount)
         {
             var url = Urls.Refund;
@@ -152,13 +175,136 @@ namespace PinPayments
             return result;
         }
 
-        public Customer Customer(string token)
+        #endregion
+        
+        #region Subscriptions
+
+        public Subscription SubscriptionAdd(Subscription subscription)
         {
-            var url = Urls.Customers + "/" + token;
+            var url = Urls.Subscriptions;
+            var postData = ParameterBuilder.ApplyAllParameters(subscription, "");
+
+            var response = Requestor.PostString(url, postData);
+            var result = JsonConvert.DeserializeObject<SubscriptionAdd>(response);
+            return result.Response;
+        }
+
+        public Subscription[] Subscriptions()
+        {
+            var url = Urls.Subscriptions;
 
             var response = Requestor.GetString(url);
-            var customer = JsonConvert.DeserializeObject<CustomerAdd>(response);
-            return customer.Response;
+            var result = JsonConvert.DeserializeObject<Subscriptions>(response);
+            return result.Response;
         }
+
+        public Subscription Subscription(string subscriptionToken)
+        {
+            var url = Urls.Subscription;
+
+            var response = Requestor.GetString(url.Replace("{token}", subscriptionToken));
+            var result = JsonConvert.DeserializeObject<SubscriptionResponse>(response);
+            return result.Response;
+        }
+
+        public Subscription SubscriptionUpdate(string subscriptionToken, string cardToken)
+        {
+            var url = Urls.Subscriptions;
+
+            var response = Requestor.PutString(url.Replace("{token}", subscriptionToken), "card_token=" + cardToken);
+            var result = JsonConvert.DeserializeObject<SubscriptionResponse>(response);
+            return result.Response;
+        }
+
+        public bool SubscriptionDelete(string subscriptionToken)
+        {
+            var url = Urls.Subscription;
+
+            try
+            {
+                var response = Requestor.Delete(url.Replace("{token}", subscriptionToken));
+                return true;
+            }
+            catch (Exception) // Don't use try/catch to test success/failure
+            {
+                return false;
+            }
+        }
+
+        public Subscription SubscriptionReactivate(string subscriptionToken, bool includeSetupFee)
+        {
+            var url = Urls.SubscriptionReactivate;
+
+            var response = Requestor.PutString(url.Replace("{token}", subscriptionToken), "include_setup_fee=" + includeSetupFee.ToString());
+            var result = JsonConvert.DeserializeObject<SubscriptionResponse>(response);
+            return result.Response;
+        }
+
+        public Ledger[] SubscriptionLedger(string subscriptionToken)
+        {
+            var url = Urls.SubscriptionLedger;
+
+            var response = Requestor.GetString(url.Replace("{token}", subscriptionToken));
+            var result = JsonConvert.DeserializeObject<SubsriptionLedger>(response);
+            return result.Response;
+        }
+
+        #endregion
+
+        #region Plans
+
+        public Plan PlanAdd(Plan plan)
+        {
+            var url = Urls.Plans;
+            var postData = ParameterBuilder.ApplyAllParameters(plan, "");
+
+            var response = Requestor.PostString(url, postData);
+            var result = JsonConvert.DeserializeObject<PlanAdd>(response);
+            return result.Response;
+        }
+
+        public Plan[] Plans()
+        {
+            var url = Urls.Plans;
+
+            var response = Requestor.GetString(url);
+            var result = JsonConvert.DeserializeObject<Plans>(response);
+            return result.Response;
+        }
+
+        public Plan Plan(string planToken)
+        {
+            var url = Urls.Plan;
+
+            var response = Requestor.GetString(url.Replace("{token}", planToken));
+            var result = JsonConvert.DeserializeObject<PlanResponse>(response);
+            return result.Response;
+        }
+
+        public Subscription[] PlanSubscriptions(string planToken)
+        {
+            var url = Urls.PlanSubscriptions;
+
+            var response = Requestor.GetString(url.Replace("{token}", planToken));
+            var result = JsonConvert.DeserializeObject<Subscriptions>(response);
+            return result.Response;
+        }
+
+        public bool PlanDelete(string planToken)
+        {
+            var url = Urls.Plan;
+
+            try
+            {
+                var response = Requestor.Delete(url.Replace("{token}", planToken));
+                return true;
+            }
+            catch (Exception) // Don't use try/catch to test success/failure
+            {
+                return false;
+            }            
+        }
+
+        #endregion
     }
 }

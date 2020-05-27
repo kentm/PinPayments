@@ -40,17 +40,17 @@ namespace PinPayments
 
         private static WebRequest GetWebRequest(string url, string method, string postData)
         {
-            var request = HttpWebRequest.Create(url) as HttpWebRequest;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            var request = HttpWebRequest.Create(url) as HttpWebRequest;
 
             request.Method = method;
             request.ContentType = "application/x-www-form-urlencoded";
-            request.UserAgent = "C# API Wrapper v001";
+            request.UserAgent = "C# API Wrapper v001 - otron.com Fork";
 
             string apiKey = PinPaymentsConfig.GetApiKey();
             request.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(apiKey + ":"));
 
-            if (postData != "")
+            if (!string.IsNullOrEmpty(postData))
             {
                 var paramBytes = Encoding.UTF8.GetBytes(postData);
                 request.ContentLength = paramBytes.Length;
@@ -65,14 +65,23 @@ namespace PinPayments
         {
             try
             {
-                using (var response = webRequest.GetResponse())
+                using (var response = (HttpWebResponse)webRequest.GetResponse())
                 {
-                    return ReadStream(response.GetResponseStream());
+                    if (response.StatusCode == HttpStatusCode.OK || 
+                        response.StatusCode == HttpStatusCode.NoContent || 
+                        response.StatusCode == HttpStatusCode.Created || 
+                        response.StatusCode == HttpStatusCode.Accepted ||
+                        response.StatusCode == HttpStatusCode.NonAuthoritativeInformation ||
+                        response.StatusCode == HttpStatusCode.ResetContent ||
+                        response.StatusCode == HttpStatusCode.PartialContent)
+                        return ReadStream(response.GetResponseStream());
+                    else
+                        throw (new InvalidOperationException(response.StatusCode.ToString()));
                 }
             }
-            catch (WebException webException)
+            catch(InvalidOperationException exception)
             {
-                return ReadStream(webException.Response.GetResponseStream());
+                throw new WebException(exception.Message);
             }
             /*
                 if (webException.Response != null)
