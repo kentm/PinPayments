@@ -1,3 +1,5 @@
+Fork to add additional functionality for Plans & Subscriptions.
+
 PinPayments Library
 ==========
 
