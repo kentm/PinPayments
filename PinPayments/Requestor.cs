@@ -65,24 +65,16 @@ namespace PinPayments
         {
             try
             {
-                using (var response = (HttpWebResponse)webRequest.GetResponse())
+                using (var response = webRequest.GetResponse())
                 {
-                    if (response.StatusCode == HttpStatusCode.OK || 
-                        response.StatusCode == HttpStatusCode.NoContent || 
-                        response.StatusCode == HttpStatusCode.Created || 
-                        response.StatusCode == HttpStatusCode.Accepted ||
-                        response.StatusCode == HttpStatusCode.NonAuthoritativeInformation ||
-                        response.StatusCode == HttpStatusCode.ResetContent ||
-                        response.StatusCode == HttpStatusCode.PartialContent)
-                        return ReadStream(response.GetResponseStream());
-                    else
-                        throw (new InvalidOperationException(response.StatusCode.ToString()));
+                    return ReadStream(response.GetResponseStream());
                 }
             }
-            catch(InvalidOperationException exception)
+            catch (WebException webException)
             {
-                throw new WebException(exception.Message);
+                return ReadStream(webException.Response.GetResponseStream());
             }
+
             /*
                 if (webException.Response != null)
                 {

@@ -179,14 +179,14 @@ namespace PinPayments
         
         #region Subscriptions
 
-        public Subscription SubscriptionAdd(Subscription subscription)
+        public SubscriptionAdd SubscriptionAdd(Subscription subscription)
         {
             var url = Urls.Subscriptions;
             var postData = ParameterBuilder.ApplyAllParameters(subscription, "");
 
             var response = Requestor.PostString(url, postData);
             var result = JsonConvert.DeserializeObject<SubscriptionAdd>(response);
-            return result.Response;
+            return result;
         }
 
         public Subscription[] Subscriptions()
